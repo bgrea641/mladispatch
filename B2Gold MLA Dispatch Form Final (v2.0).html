@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truck Departure Form</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+</style>
+<script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
+<script>
+emailjs.init('sMkJUw10TwiC7sGUL'); // Initialize EmailJS with your user ID
+
+function updateDriverRows() {
+  var numberOfTrucks = document.getElementById('numberOfTrucks').value;
+  var driverRows = document.getElementById('driverRows');
+  driverRows.innerHTML = '';
+
+function generateTrailerUnitOptions() {
+  const trailerUnits = [
+    "TL-151", "TL-152", "TL-153", "TL-154", "TL-155", "TL-156/157", "TL-158/159", "TL-160/161",
+    "TL-162/163", "TL-164/165", "TL-166/167", "TL-168/169", "TL-170/171", "TL-172/173",
+    "TL-174/175", "TL-176/177", "TL-178/179", "TL-180/181", "TL-182/183", "TL-184/185",
+    "TL-186/187", "TL-188/189", "TL-454", "TL-501", "TL-502", "TL-651", "TL-652", "TL-653",
+    "TL-654", "TL-657", "TL-658", "TL-659", "TL-660", "TL-661", "TL-662", "TL-667", "TL-670",
+    "TL-676", "TL-679", "TL-680", "TL-682", "TL-749", "TL-763", "TL-766", "TL-766", "TL-771",
+    "TL-773", "TL-775", "TL-779", "TL-780", "TL-853", "TL-854", "TL-855", "TL-857", "TL-869",
+    "TL-877", "TL-878", "TL-879", "TL-951", "TL-956", "TL-961", "TL-962", "TL-964", "Water Tank"
+  ];
+  let options = trailerUnits.map(unit => `<option value="${unit}">${unit}</option>`).join('');
+  options += `<option value="other">Other</option>`; // Add this line for the "Other" option
+  return `<option value="">Select a trailer unit</option>${options}`;
+}
+
+function toggleOtherTrailerUnitInput(index, isVisible) {
+  const otherInput = document.getElementById(`otherTrailerUnitNumber${index}`);
+  if (isVisible) {
+    otherInput.style.display = 'inline';
+  } else {
+    otherInput.style.display = 'none';
+  }
+}
+
+  for (var i = 0; i < numberOfTrucks; i++) {
+    var row = `<tr>
+  <td><select name="driverName[]" onchange="updateDriverDetails(this, ${i})">${generateDriverOptions()}</select></td>
+  <td><input type="text" name="wirNumber[]" required></td>
+  <td><input type="text" id="tractorTrailerNumber${i}" name="tractorTrailerNumber[]" required></td>
+  <td>
+    <select name="trailerUnitNumber[]" id="trailerUnitNumber${i}" onchange="handleOtherOptionSelected(this, ${i})" required>
+      ${generateTrailerUnitOptions()}
+    </select>
+    <input type="text" id="otherTrailerUnitNumber${i}" style="display:none;" name="otherTrailerUnitNumber[]" placeholder="Enter Trailer Unit Number">
+  </td>
+  <td><input type="checkbox" name="leadDriver[]" value="Yes"></td>
+  <td><select name="inreachNumber[]" required>${generateInreachOptions()}</select></td>
+</tr>`;
+    driverRows.innerHTML += row;
+  }
+}
+
+function handleOtherOptionSelected(selectElement, index) {
+  var otherInput = document.getElementById(`otherTrailerUnitNumber${index}`);
+  if (selectElement.value === 'other') {
+    otherInput.style.display = 'inline'; // Show the input box
+  } else {
+    otherInput.style.display = 'none'; // Hide the input box
+    otherInput.value = ''; // Optional: Clear the value if "Other" is not selected
+  }
+}
+
+function generateDriverOptions() {
+  let options = '<option value="">Select a driver</option>'; // Default option
+  Object.keys(driverData).forEach(function(driver) {
+    options += `<option value="${driver}">${driver}</option>`;
+  });
+  return options;
+}
+
+function updateDriverDetails(selectElement, rowIndex) {
+  var driverName = selectElement.value;
+  var details = driverData[driverName] || {tractorTrailerNumber: '', wirNumber: ''}; // Default to empty strings if no data found
+
+  // Update the Tractor Trailer Number
+  var tractorTrailerNumberInput = document.getElementById('tractorTrailerNumber' + rowIndex);
+  tractorTrailerNumberInput.value = details.tractorTrailerNumber;
+
+  // Find the WIR Number input for the corresponding row and update it
+  var wirNumberInput = document.querySelectorAll(`input[name="wirNumber[]"]`)[rowIndex];
+  wirNumberInput.value = details.wirNumber;
+  wirNumberInput.setAttribute('readonly', true); // Make the WIR Number field read-only
+}
+
+var driverData = {
+  "Alexandre, Garmel": {
+    "tractorTrailerNumber": "TT-363",
+    "wirNumber": "048"
+  },
+  "Bickerstaff, James": {
+    "tractorTrailerNumber": "TT-354",
+    "wirNumber": "035"
+  },
+  "Bishop, Terry": {
+    "tractorTrailerNumber": "TT-308",
+    "wirNumber": "027"
+  },
+  "Bourbonnais, Rejean": {
+    "tractorTrailerNumber": "TT-366",
+    "wirNumber": "036"
+  },
+  "Boyko, Marvin": {
+    "tractorTrailerNumber": "TT-395",
+    "wirNumber": "019"
+  },
+  "Brown, Stu": {
+    "tractorTrailerNumber": "TT-370",
+    "wirNumber": "011"
+  },
+  "Cardinal, Richard": {
+    "tractorTrailerNumber": "TT-371",
+    "wirNumber": "033"
+  },
+  "Condon, Chris": {
+    "tractorTrailerNumber": "TT-369",
+    "wirNumber": "005"
+  },
+  "Daniels, John": {
+    "tractorTrailerNumber": "TT-372",
+    "wirNumber": "029"
+  },
+  "Disterheft, Mark": {
+    "tractorTrailerNumber": "TT-396",
+    "wirNumber": "002"
+  },
+  "Fraser, Dan": {
+    "tractorTrailerNumber": "TT-367",
+    "wirNumber": "031"
+  },
+  "Gardiner, Danny": {
+    "tractorTrailerNumber": "TT-399",
+    "wirNumber": "034"
+  },
+  "Gowler, Brad": {
+    "tractorTrailerNumber": "TT-373",
+    "wirNumber": "012"
+  },
+  "Graves, Brent": {
+    "tractorTrailerNumber": "TT-314",
+    "wirNumber": "037"
+  },
+  "Gray, Tyler": {
+    "tractorTrailerNumber": "TT-362",
+    "wirNumber": "024"
+  },
+  "Haigh, Ralph": {
+    "tractorTrailerNumber": "TT-386",
+    "wirNumber": "025"
+  },
+  "Haryett, David": {
+    "tractorTrailerNumber": "TT-310",
+    "wirNumber": "026"
+  },
+  "Hellema, Jan": {
+    "tractorTrailerNumber": "TT-364",
+    "wirNumber": "038"
+  },
+  "Horton, Malcom": {
+    "tractorTrailerNumber": "TT-376",
+    "wirNumber": "010"
+  },
+  "Horvath, Frank": {
+    "tractorTrailerNumber": "TT-383",
+    "wirNumber": "022"
+  },
+  "Johnson, Kelly": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "060"
+  },
+  "Kane, Gerald": {
+    "tractorTrailerNumber": "TT-316",
+    "wirNumber": "028"
+  },
+  "Klassen, Richard": {
+    "tractorTrailerNumber": "TT-361",
+    "wirNumber": "039"
+  },
+  "Krahn, Jake": {
+    "tractorTrailerNumber": "TT-398",
+    "wirNumber": "040"
+  },
+  "Lalonde, Talia": {
+    "tractorTrailerNumber": "TT-353",
+    "wirNumber": "041"
+  },
+  "Long, Kenneth": {
+    "tractorTrailerNumber": "TT-352",
+    "wirNumber": "042"
+  },
+  "Machalka, Michael": {
+    "tractorTrailerNumber": "TT-375",
+    "wirNumber": "054"
+  },
+  "Macleod, Devin": {
+    "tractorTrailerNumber": "TT-309",
+    "wirNumber": "013"
+  },
+  "MacNearney, Ian": {
+    "tractorTrailerNumber": "TT-360",
+    "wirNumber": "015"
+  },
+  "Marklinger, Brent": {
+    "tractorTrailerNumber": "TT-374",
+    "wirNumber": "006"
+  },
+  "McLean, Bob": {
+    "tractorTrailerNumber": "TT-391",
+    "wirNumber": "044"
+  },
+  "McLean, Joe": {
+    "tractorTrailerNumber": "TT-350",
+    "wirNumber": "045"
+  },
+  "McMillan, Mike": {
+    "tractorTrailerNumber": "TT-359",
+    "wirNumber": "046"
+  },
+  "Miller, Corben": {
+    "tractorTrailerNumber": "TT-390",
+    "wirNumber": "047"
+  },
+  "Minoza, Barrie": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "061"
+  },
+  "Mitchell, Darcy": {
+    "tractorTrailerNumber": "TT-306",
+    "wirNumber": "014"
+  },
+  "Muris, Adam": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "062"
+  },
+  "Murphy, Brian": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "063"
+  },
+  "Murphy, Colin": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "064"
+  },
+  "Palmer, Corey": {
+    "tractorTrailerNumber": "TT-311",
+    "wirNumber": "003"
+  },
+  "Petersson, Mel": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "001"
+  },
+  "Quinn, Todd": {
+    "tractorTrailerNumber": "TT-358",
+    "wirNumber": "043"
+  },
+  "Richard, Hughie": {
+    "tractorTrailerNumber": "TT-394",
+    "wirNumber": "016"
+  },
+  "Richard, Joey": {
+    "tractorTrailerNumber": "TT-384",
+    "wirNumber": "049"
+  },
+  "Samanga, Love Bongo": {
+    "tractorTrailerNumber": "TT-",
+    "wirNumber": "052"
+  },
+  "Sauder, John": {
+    "tractorTrailerNumber": "TT-307",
+    "wirNumber": "030"
+  },
+  "Sauder, Russell": {
+    "tractorTrailerNumber": "TT-379",
+    "wirNumber": "017"
+  },
+  "Scarba, Adam": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "055"
+  },
+  "Schmid, Roland": {
+    "tractorTrailerNumber": "TT-389",
+    "wirNumber": "050"
+  },
+  "Seitz, Ron": {
+    "tractorTrailerNumber": "TT-378",
+    "wirNumber": "051"
+  },
+  "Sherriff, Shueb": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "066"
+  },
+  "Simms, Jeff": {
+    "tractorTrailerNumber": "TT-388",
+    "wirNumber": "032"
+  },
+  "Steward, Michael": {
+    "tractorTrailerNumber": "TT-382",
+    "wirNumber": "009"
+  },
+  "Tetreault, Jamie": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "067"
+  },
+  "Tetreault, Jennifer": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "068"
+  },
+  "Thibault, Carl": {
+    "tractorTrailerNumber": "TT-392",
+    "wirNumber": "018"
+  },
+  "Trudgeon, Stacy": {
+    "tractorTrailerNumber": "TT-312",
+    "wirNumber": "007"
+  },
+  "Vautour, Dave": {
+    "tractorTrailerNumber": "TT-380",
+    "wirNumber": "004"
+  },
+  "Vienneau, Stephane": {
+    "tractorTrailerNumber": "TT-385",
+    "wirNumber": "021"
+  },
+  "White, Jack": {
+    "tractorTrailerNumber": "TT-351",
+    "wirNumber": "053"
+  },
+  "Whittaker, Darren": {
+    "tractorTrailerNumber": "TT-381",
+    "wirNumber": "023"
+  },
+  "Wilks, Shelley": {
+    "tractorTrailerNumber": "TT-357",
+    "wirNumber": "008"
+  },
+  "Wourms, Marshall": {
+    "tractorTrailerNumber": "",
+    "wirNumber": "070"
+  }
+};
+
+function generateInreachOptions() {
+  let options = '<option value="">Select an InReach #</option>';
+  for (let i = 1; i <= 100; i++) {
+    options += `<option value="${i}">${i}</option>`;
+  }
+  return options;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('truckDepartureForm');
+  form.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+  // Validation setup
+    let isValid = true;
+    const leadDriverChecks = document.querySelectorAll('input[name="leadDriver[]"]:checked');
+    isValid = leadDriverChecks.length === 1; // Ensure exactly one lead driver is selected
+
+    const requiredInputs = document.querySelectorAll('#truckDepartureForm input:required, #truckDepartureForm select:required');
+    requiredInputs.forEach(input => {
+      if (input.type === 'checkbox' && input.name === 'leadDriver[]') {
+        // Skip validation here, as it's handled separately
+      } else if (!input.value || (input.tagName === 'SELECT' && input.value === '')) {
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      alert('Please fill in all required fields and only one lead driver is selected.');
+      return;
+    }
+
+    let messageContent = `Date: ${document.getElementById('date').value}\n` +
+                         `MLA Departure Time: ${document.getElementById('mlaDepartureTime').value}\n` +
+                         `Convoy #: ${document.getElementById('convoyNumber').value}\n` +
+                         `Number of Trucks: ${document.getElementById('numberOfTrucks').value}\n\n`;
+
+    const driverSelects = document.querySelectorAll('select[name="driverName[]"]');
+    const wirInputs = document.querySelectorAll('input[name="wirNumber[]"]');
+    const tractorTrailerInputs = document.querySelectorAll('input[name="tractorTrailerNumber[]"]');
+    const trailerUnitSelects = document.querySelectorAll('select[name="trailerUnitNumber[]"]');
+    const inreachSelects = document.querySelectorAll('select[name="inreachNumber[]"]');
+
+    for (let i = 0; i < driverSelects.length; i++) {
+      let leadDriverValue = leadDriverChecks[i] && leadDriverChecks[i].checked ? "Yes" : "No";
+      let trailerUnitSelect = trailerUnitSelects[i]; // The select element for trailer unit number
+      let trailerUnitNumberValue = trailerUnitSelect.value; // The selected value from the dropdown
+    
+    // Check if "Other" is selected and use the manual entry if it is
+    if (trailerUnitNumberValue === 'other') {
+        trailerUnitNumberValue = document.getElementById(`otherTrailerUnitNumber${i}`).value;
+    }
+
+    // Now use trailerUnitNumberValue directly in your message content
+    messageContent += `Driver #${i + 1} Name: ${driverSelects[i].value}\n` +
+                      `WIR Number: ${wirInputs[i].value}\n` +
+                      `Tractor Trailer Number: ${tractorTrailerInputs[i].value}\n` +
+                      `Trailer Unit Number: ${trailerUnitNumberValue}\n` +
+                      `Lead Driver: ${leadDriverValue}\n` +
+                      `INREACH #: ${inreachSelects[i].value}\n\n`;
+}
+    document.getElementById('compiledMessage').value = messageContent;
+
+const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+const now = new Date();
+const formattedTimestamp = monthNames[now.getMonth()] + ' ' +
+                           ('0' + now.getDate()).slice(-2) + ', ' +
+                           now.getFullYear() + ' ' +
+                           ('0' + now.getHours()).slice(-2) + ':' +
+                           ('0' + now.getMinutes()).slice(-2) + ':' +
+                           ('0' + now.getSeconds()).slice(-2);
+
+        const emailSubject = 'Dispatch Notification WIR 2024 - ' + formattedTimestamp;
+
+    // Prepare the email data
+    const emailData = {
+      service_id: 'service_7j6xdmf',
+      template_id: 'template_4vpytfo',
+      user_id: 'sMkJUw10TwiC7sGUL',
+      template_params: {
+          'subject': emailSubject,
+          'message': document.getElementById('compiledMessage').value, 
+      }
+    };
+
+        // Send the email with EmailJS
+        emailjs.send('service_7j6xdmf', 'template_4vpytfo', {
+            subject: emailSubject,
+            message: document.getElementById('compiledMessage').value,
+            // Include other form data as needed
+        })
+        .then(function(response) {
+            alert('Form successfully submitted');
+            form.reset(); // Optionally clear the form fields
+        }, function(error) {
+            alert('Failed to send the form. Please try again.');
+        });
+    });
+});
+</script>
+</head>
+<body>
+
+<h1>B2Gold MLA Dispatch</h1>
+
+<form id="truckDepartureForm">
+  <input type="hidden" id="compiledMessage" name="message"> <!-- Hidden field for compiled message -->
+  
+  <label for="date">Date:</label><br>
+  <input type="date" id="date" name="date" required><br>
+
+  <label for="mlaDepartureTime">MLA Departure Time:</label><br>
+  <input type="time" id="mlaDepartureTime" name="mlaDepartureTime" required><br>
+
+  <label for="convoyNumber">Convoy #:</label><br>
+<select id="convoyNumber" name="convoyNumber"required><br>
+  <option value="">Select Convoy Number</option>
+  <!-- Dynamically generate options from 1 to 24 -->
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+  <option value="6">6</option>
+  <option value="7">7</option>
+  <option value="8">8</option>
+  <option value="9">9</option>
+  <option value="10">10</option>
+  <option value="11">11</option>
+  <option value="12">12</option>
+  <option value="13">13</option>
+  <option value="14">14</option>
+  <option value="15">15</option>
+  <option value="16">16</option>
+  <option value="17">17</option>
+  <option value="18">18</option>
+  <option value="19">19</option>
+  <option value="20">20</option>
+  <option value="21">21</option>
+  <option value="22">22</option>
+  <option value="23">23</option>
+  <option value="24">24</option>
+</select><br>
+
+  <label for="numberOfTrucks"># of Trucks:</label><br>
+  <input type="number" id="numberOfTrucks" name="numberOfTrucks" oninput="updateDriverRows()" min="1"><br>
+
+  <table>
+  <thead>
+    	<tr>
+      	<th>Driver Name</th>
+      	<th>WIR Number</th>
+     	 <th>Truck Number</th>
+      	<th>Trailer Unit Number</th>
+      	<th>Lead Driver</th>
+	<th>InReach Number</th>
+      </tr>
+    </thead>
+    <tbody id="driverRows">
+      <!-- Driver rows will be inserted here by JavaScript -->
+    </tbody>
+  </table>
+
+  <input type="submit" value="Submit">
+</form>
+
+</body>
+</html>
